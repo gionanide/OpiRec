@@ -58,7 +58,7 @@ def CUDA_init(core,memory):
                 print('Fixed memory size allocated')
                 
                 
-        #begin the session
+        #begin the session with the previous defined properties
         sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
         keras.backend.tensorflow_backend.set_session(sess)
         
