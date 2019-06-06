@@ -13,10 +13,10 @@ def CUDA_init(core,memory):
 
         '''
         initialize some properties concerning CUDA, Peripheral Component Interconnect (PCI), a computer bus a system of 
-        communication that transfers data between components inside the computer. Recall that we user this command because 
+        communication that transfers data between components inside the computer. Recall that we use this command because 
         the GPU ID that is used by CUDA and GPU ID used by non-CUDA programs like nvidia-smi are different. CUDA tries 
         to associate the fastest GPU with the lowest ID. Non-CUDA tools use the PCI Bus ID of the GPUs to give them a GPU ID. 
-        With the following command, we request from CUDA to user the bus IDs of the GPUs instead of it'w own internal IDs.
+        With the following command, we request from CUDA to use the bus IDs of the GPUs instead of it'w own internal IDs.
         '''
         os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
         
