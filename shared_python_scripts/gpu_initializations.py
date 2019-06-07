@@ -26,14 +26,14 @@ def CUDA_init(core,memory):
                 #define which GPU to use, the number is the ID of the GPU given from your system (bus ID)
                 os.environ["CUDA_VISIBLE_DEVICES"]="0"
                 
-                print('Using GPU')
+                print('\n ----------------- Using GPU ----------------- \n')
         
         elif(core == "CPU"):
         
                 #run the following command if you want to force keras to run on CPU
                 os.environ["CUDA_VISIBLE_DEVICES"]=""
                 
-                print('Using CPU')
+                print('\n ----------------- Using CPU ----------------- \n')
         
         
         #use exactly the GPU percentage you actally need, because keras default procedure allocates all memory
@@ -47,18 +47,23 @@ def CUDA_init(core,memory):
                 # after this initialize the session
                 gpu_options = tf.GPUOptions(allow_growth=True)
                 
-                print('Dynamic memory allocation')
+                print('\n ----------------- Dynamic memory allocation ----------------- \n')
                 
                 
         elif(memory == 'fraction'):
                 
-                #if you use fraction, you have to define the percentage of gpu to use
-                gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+                #give fraction as an input
+                gpu_percentage = float(input('Give the GPU percentage that you want to use, e.g. 0.33 for 33%: '))
                 
-                print('Fixed memory size allocated')
+                #if you use fraction, you have to define the percentage of gpu to use
+                gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_percentage)
+                
+                print('\n ----------------- Fixed memory size allocated ----------------- \n')
                 
                 
         #begin the session with the previous defined properties
         sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
         keras.backend.tensorflow_backend.set_session(sess)
+        print('\n ----------------- End initalizing CUDA properties ----------------- \n')
+        print('\n\n\n')
         
