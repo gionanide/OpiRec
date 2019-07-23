@@ -3,6 +3,8 @@ import numpy as np
 import math
 
 
+#https://github.com/gionanide/matrix-factorization-in-python
+
 
 class MF():
     
