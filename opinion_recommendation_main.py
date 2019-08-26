@@ -10,6 +10,7 @@ import numpy as np
 from models import recommender_v2
 from models import recommender_v1
 from models import recommender_v3
+from models import recommender_v4
 import evaluation
 
 
@@ -108,11 +109,47 @@ if __name__ == '__main__':
         
         
         
+        #----------------------------------------------------- Evaluation procedure ------------------------------------------------
+        '''
+        
+        Having problem with memory with have to evaluate each sample seperately, and not load all the evaluation set in the memory, so we have to predict the output just for one review, decode it express it in natural language and then clear the memory to go to the next.
+        
+        '''
+        
+        print('Going for evaluation')
+        
+        #----------------------- uncomment this if you want to make all the predictions by once
+        
+        
+        role='Training' 
+        
         predictions = evaluation.predictions(model, user_training_samples, product_training_samples, neighbourhood_training_samples)
-        evaluation.make_sentence(predictions, training_ground_truth, target_reviews_length_train, tokenizer, role='Training')
+        
+        evaluation.make_sentence(predictions, training_ground_truth, target_reviews_length_train, tokenizer, role)
+        
+        
+        
+        role='Testing'
         
         predictions = evaluation.predictions(model, user_testing_samples, product_testing_samples, neighbourhood_testing_samples)
-        evaluation.make_sentence(predictions, testing_ground_truth, target_reviews_length_test, tokenizer, role='Testing')
+        
+        evaluation.make_sentence(predictions, testing_ground_truth, target_reviews_length_test, tokenizer, role)
+        
+
+
+        #-------------------------------------------------------- train one by one
+        
+        '''
+        role = 'Training'
+        
+        evaluation.predict_one_by_one(role, user_training_samples, product_training_samples, neighbourhood_training_samples, training_ground_truth, parallel_model,target_reviews_length_train, tokenizer)
+        
+
+        
+        role = 'Testing'
+        
+        evaluation.predict_one_by_one(role, user_testing_samples, product_testing_samples, neighbourhood_testing_samples, testing_ground_truth, parallel_model, target_reviews_length_test, tokenizer)
+        '''
                 
                 
         
