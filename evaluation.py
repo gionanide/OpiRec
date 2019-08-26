@@ -34,6 +34,41 @@ def train_model(model, user_training_samples, product_training_samples, neighbou
         
         return model
         
+
+
+'''
+
+        
+use this function to decode one hot encoding to words Id
+
+input: [0 0 0 1 .... 0 0 0 ]
+output: [4]
+
+'''
+def decode_one_hot(prediction):
+
+        temp_predictions = []
+                
+        #iterate this individual predictions to decode it to natural language, iterate every 'word' to find the word with the maximum probability and to assign the according ID
+        #print(prediction[0].shape)
+        for element in prediction:
+        
+                #print('element in prediction:',element.shape)
+                #find the maximum ID
+                index_of_max_element = np.where(element == np.amax(element))
+                
+                #take it as an integer
+                word_id = index_of_max_element[0][0]
+                
+                #append it to the list
+                temp_predictions.append(word_id)
+              
+        #convert it to numpy array to feed the make sentence function
+        temp_predictions = np.array(temp_predictions)
+        #print(temp_predictions.shape)
+        
+        return temp_predictions        
+
         
       
 '''
@@ -52,6 +87,46 @@ def predictions(model, user, product, neighbourhood):
         #print(predictions)
         
         return predictions
+        
+        
+#iterate all the samples and predict one by one
+def predict_one_by_one(role, user_samples, product_samples, neighbourhood_samples, ground_truths, model, target_reviews_length_train, tokenizer):
+
+        count_predictions = 0 #keep track of the predictions
+        
+        #iterate every sample seperately to make the prediction, because of the aforementioned reasons (memory usage)
+        for sample in range(user_samples.shape[0]):                
+        
+                #reshape all the prediction inputs because our model wants 3 dimensions inputs(batch, reviews, features))
+                user_sample = np.reshape(user_samples[sample], (1, user_samples[sample].shape[0], user_samples[sample].shape[1]))
+                #print(user_training_samples.shape)
+                
+                product_sample = np.reshape(product_samples[sample], (1, product_samples[sample].shape[0], product_samples[sample].shape[1]))
+                #print(product_training_samples.shape)
+                
+                neighbourhood_sample = np.reshape(neighbourhood_samples[sample], (1, neighbourhood_samples[sample].shape[0], neighbourhood_samples[sample].shape[1]))
+                #print(neighbourhood_training_samples.shape)
+        
+                #individual prediction
+                prediction = predictions(model, user_sample, product_sample, neighbourhood_sample)
+                #print(prediction.shape)
+                #print('individual prediction shape:',prediction.shape)
+                
+                
+                #decode one hot encoding to words ID
+                temp_predictions = decode_one_hot(prediction[0])
+                
+                ground_truth = decode_one_hot(ground_truths[sample])
+                
+                #print(temp_predictions.shape)
+                #print(ground_truth.shape)
+                
+                
+                
+                make_sentence(temp_predictions, ground_truth, target_reviews_length_train, tokenizer, role, count_predictions)
+                
+                count_predictions+=1
+        
         
 
       
