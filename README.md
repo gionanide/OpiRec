@@ -8,3 +8,8 @@
 ### Recommender v_2
 
 ![alt text](https://github.com/gionanide/Opinion_Recommendation/blob/master/recommenders/recommender_v2.png)
+
+
+## Recommender v_3
+
+![alt text](https://github.com/gionanide/Opinion_Recommendation/blob/master/recommenders/recommender_v3.png)
