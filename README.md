@@ -17,4 +17,4 @@
 
 ## Recommender v_4
 
-![alt text](hhttps://github.com/gionanide/Opinion_Recommendation/blob/master/recommenders/recommender_v4.png)
+![alt text](https://github.com/gionanide/Opinion_Recommendation/blob/master/recommenders/recommender_v4.png)
