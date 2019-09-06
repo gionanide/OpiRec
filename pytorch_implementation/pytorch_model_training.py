@@ -252,3 +252,109 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
         
         
         return recommender_encoder, recommender_decoder
+
+        
+'''
+
+Make this function in order to test our model to unseen data, we follow the training procedure with some variations.
+
+'''        
+def make_prediction(path, recommender_encoder, recommender_decoder, samples, output_vocabulary_size, targets, empty_text_reviews, normalize_user_reviews, normalize_product_reviews, normalize_neighbourhood_reviews, one_hot, padding, tokenizer, target_reviews_length, role):
+
+        
+        #because we want to run on GPUs
+        device = torch.device('cuda:0')
+        
+        
+        #initialize the flag, to catch some empty reviews
+        empty_flag = False
+        
+
+        #iterate all the samples, one by one
+        for index, sample in enumerate(samples):
+        
+        
+                #keep record of the predictions
+                predict_sentence = []
+        
+                #for maching the format, here if we want we can define a batch size
+                sample = [sample]
+                target = [targets[index]]
+                #print(sample)
+                #print(target)
+        
+                user_training_samples,user_testing_samples,product_training_samples,product_testing_samples,neighbourhood_training_samples,neighbourhood_testing_samples,training_ground_truth,testing_ground_truth,empty_flag = preprocessing.make_training_testing(path, sample, target, empty_text_reviews, normalize_user_reviews, normalize_product_reviews, normalize_neighbourhood_reviews, output_vocabulary_size, one_hot, empty_flag)
+                
+
+                #in case that I have a training sample, otherwise we feed our model
+                if (user_testing_samples.size == 0):
+                
+                        #skip this iteration
+                        continue
+
+
+
+
+                #convert them to torch tensor and put the on GPU, use permute to change the axes of the tensor
+                user_inputs = torch.tensor(user_testing_samples, dtype=torch.float32, device=device).permute(1,0,2)
+                product_inputs = torch.tensor(product_testing_samples, dtype=torch.torch.float32, device=device).permute(1,0,2)
+                neighbourhood_inputs = torch.tensor(neighbourhood_testing_samples, dtype=torch.torch.float32, device=device).permute(1,0,2)
+
+
+                #feed the model
+                user_lstm_output, user_h, neighbourhood_lstm_output, neighbourhood_h, product_lstm_output, product_h = recommender_encoder(user_inputs, product_inputs, neighbourhood_inputs)
+                
+                
+                #assign the first hidden state of the decoder
+                decoder_hidden = product_h
+                                               
+                
+                #print('\n\n ---------- End of Encoder ---------- \n\n')
+                
+                
+                #print(testing_ground_truth)
+                
+                for target_word in testing_ground_truth[0]:
+                
+                        
+                
+                        #print('Generating a word \n')
+                        #print(target_word)
+                
+                        activations, decoder_hidden = recommender_decoder(user_lstm_output, user_h, neighbourhood_lstm_output, neighbourhood_h, product_lstm_output, product_h, decoder_hidden)
+                        
+                        #iterating the ground thruth
+                        target_word = torch.tensor(target_word, dtype=torch.long, device=device).unsqueeze(0)
+                        #print('Target:',target_word.shape)
+                        
+                        activations = activations.squeeze(0)
+                        #print('Prediction:',activations.shape)
+                        
+                        #print('Target word:',target_word.shape)
+                        #print(activations)
+                        #print('Predicted word:',activations.shape)
+                        
+                        #find the position of the max element, which represents the word ID
+                        index = torch.argmax(activations).item()
+
+                        #print('index:',index)
+                        
+                        predict_sentence.append(index)
+                     
+                    
+                        
+                prediction = predict_sentence
+                ground_truth = testing_ground_truth[0]
+                print(len(predict_sentence))
+                print(len(testing_ground_truth[0]))
+                
+                count_predictions = index
+                                
+                
+                evaluation.make_sentence_one_by_one(prediction, ground_truth, target_reviews_length, tokenizer, role, count_predictions)
+
+                        
+                        
+                #print('END OF SENTENCE')
+
+
