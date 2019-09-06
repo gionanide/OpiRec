@@ -1,19 +1,27 @@
 #!usr/bin/python
 from pytorch_models import recommender_v1_encoder
 from pytorch_models import recommender_v1_decoder
+from pytorch_models import recommender_v2_decoder
 import preprocessing
 import torch
 import evaluation
 import sys
 import word2vec
+import numpy as np
+import math
+import random
 
 
-def training(path, samples, output_vocabulary_size, targets, empty_text_reviews, normalize_user_reviews, normalize_product_reviews, normalize_neighbourhood_reviews, one_hot, padding, hidden_units, epochs, tokenizer):
+
+def training(path, samples, output_vocabulary_size, targets, empty_text_reviews, normalize_user_reviews, normalize_product_reviews, normalize_neighbourhood_reviews, one_hot, padding, hidden_units, epochs, tokenizer, teacher_forcing):
 
         #--------------------------------------------------------> Pytorch properties
 
         #reproducibility
         torch.manual_seed(7)
+        
+        #define the decay function in order to control the trade off between feeding the model with it's output or the real output
+        scheduled_sampling = lambda k,i : k/(k + math.exp(i/k))
 
         #because we want to run on GPUs
         device = torch.device('cuda:0')
@@ -32,7 +40,10 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
         recommender_encoder = recommender_v1_encoder.Recommender_v1_encoder(hidden_units)
         
         #initialize the network decoder
-        recommender_decoder = recommender_v1_decoder.Recommender_v1_decoder(hidden_units, output_space)
+        #recommender_decoder = recommender_v1_decoder.Recommender_v1_decoder(hidden_units, output_space)
+        
+        #initialize the network decoder --------------------------------------------------------------------------------------> Using teacher forcing, and DMN 
+        recommender_decoder = recommender_v2_decoder.Recommender_v2_decoder(hidden_units, output_space)
         
         #check for paralellism
         if (parallel):
@@ -66,6 +77,13 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
         #initialize the flag, to catch some empty reviews
         empty_flag = False
         
+        #define the function to handle the percentage of teacher forcing -- Initialization
+        teacher_forcing_ratio = scheduled_sampling(5,0)
+        #print(teacher_forcing_ratio)
+        
+        #keep track of the times that the model get as an input the actual word or it's prediction
+        #counter_true = 0
+        #counter_predicted = 0
         
 
         #start training
@@ -83,6 +101,8 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
                 #iterate all the samples, one by one
                 for index, sample in enumerate(samples):
                 
+                        #print(index)
+                
                         #keep track of sample loss
                         sample_loss = 0
                         
@@ -97,26 +117,21 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
                         
                                 #if I faced an empty reivew I have to change my index to look back
                                 review_index = review_index - 1
-                                
-                                print('HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
 
                                 
                                 
                         target = [targets[review_index]]
+
                         
-                        #------------------------------------------------------------------------------> Prepare format for teacher forcing
-                        #print(target)
-                        #for word in target[0]:
-                        #        word = preprocessing.index_to_word_mapping(word, tokenizer)
-                        #        print(word)
-                        #        word_vector = word2vec.word2vec(word)
-                        #        print(word_vector)
-                                
-                        #break
+                        #print(target.type) this is a list
+                        #print(target[0].type) this is a list as well 
+
+                        #erase all the words that are not in the pretrained model, which provide us with the embeddings
+                        target = word2vec.clean_text_review(target, tokenizer)
                         
                        
                         user_training_samples,user_testing_samples,product_training_samples,product_testing_samples,neighbourhood_training_samples,neighbourhood_testing_samples,training_ground_truth,testing_ground_truth, empty_flag = preprocessing.make_training_testing(path, sample, target, empty_text_reviews, normalize_user_reviews, normalize_product_reviews, normalize_neighbourhood_reviews, output_space, one_hot, empty_flag)
-                        
+
                         
                         #just checking
                         #print('\n')
@@ -146,6 +161,28 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
                         
                                 #skip this iteration
                                 continue
+       
+                                
+                        #take the decoder inputs
+                        decoder_inputs = training_ground_truth
+                        '''
+                        #------------------------------------------------------------------------------> Prepare format for teacher forcing
+                        print(target)
+                        for word in target[0]:
+                                word = preprocessing.index_to_word_mapping(word, tokenizer)
+                                print(word)
+                                word_vector = word2vec.word2vec(word)
+                                #print(word_vector.shape)
+                        '''
+                        
+                        
+                        #removing the SOS symbol from the ground truth
+                        training_ground_truth = np.delete(training_ground_truth[0], 0)
+                        
+                        #reshape the resulting array to keep the format
+                        training_ground_truth = np.reshape(training_ground_truth, (1, training_ground_truth.shape[0]))
+                                
+                                
                                 
 
 
@@ -165,7 +202,17 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
                         
                         #assign the first hidden state of the decoder
                         decoder_hidden = product_h
-                                                       
+                        
+                        
+                        if (teacher_forcing):
+                        
+                                #make the appropriate format in order to feed the previous word to the decoder -- the first word to feed decoder is SOS
+                                decoder_inputs = torch.FloatTensor(torch.Size((1, 1, 300)))
+                                #but their word embeddings can be arbitrary, small random numbers will do fine, because this vector would be equally far from all "normal" vectors.
+                                torch.randn(torch.Size((1, 1, 300)), out=decoder_inputs)
+                                decoder_inputs = torch.tensor(decoder_inputs, dtype=torch.torch.float32, device=device)
+                                #print('Decoder initialization with SOS token',decoder_inputs)
+                                #print('Decoder initialization with SOS token shape',decoder_inputs.shape)                                                       
                         
                         #print('\n\n ---------- End of Encoder ---------- \n\n')
                         
@@ -175,22 +222,54 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
                         
                                 #print('Generating a word \n')
                                 #print(target_word)
-                        
+
                                 # ------------------------------------------------------------------- DECODER -----------------------------------------------------------
-                                activations, decoder_hidden = recommender_decoder(user_lstm_output, user_h, neighbourhood_lstm_output, neighbourhood_h, product_lstm_output, product_h, decoder_hidden)
+                                activations, decoder_hidden = recommender_decoder(user_lstm_output, user_h, neighbourhood_lstm_output, neighbourhood_h, product_lstm_output, product_h, decoder_hidden, decoder_inputs)
                                 
+                                
+                                if (teacher_forcing):
+                                
+                                        #generate a random number between 0-1, the bigger the ratio the more probable the number to be smaller that it
+                                        random_number = random.uniform(0, 1)
+                                        #print('\n Random number:',random_number,'\n')
+                                        
+                                        if ( random_number < teacher_forcing_ratio ):
+                                        
+                                                #print('True target')
+                                                #counter_true+=1
+
+                                                #because the teacher forcing ratio in close to one, it is more probable that the number wil be lower that the ratio
+                                                decoder_inputs = target_word
+                                                
+                                        else:
+                                        
+                                                #print('Predicted target')
+                                                #counter_predicted+=1
+                                        
+                                                #otherwise feed the model with it's previous output, this becomes more probable as tha training goes on
+                                                decoder_inputs = torch.argmax(activations).item()
+                                                #print('Decodeeeer inputs',decoder_inputs)
+                                        
+                                        
+                                        #make the appropriate format in order to feed the previous word to the decoder
+                                        decoder_inputs = preprocessing.index_to_word_mapping(decoder_inputs, tokenizer)
+                                        #print(decoder_inputs)
+                                        decoder_inputs = word2vec.word2vec(decoder_inputs)
+                                        decoder_inputs = torch.tensor(decoder_inputs, dtype=torch.torch.float32, device=device).unsqueeze(0).unsqueeze(0)
+
+
                                 #iterating the ground thruth
                                 target_word = torch.tensor(target_word, dtype=torch.long, device=device).unsqueeze(0)
-                                #print('Target:',target_word.shape)
+                                #print('Target:',target_word)
                                 
                                 activations = activations.squeeze(0)
+                                #print(activations)
                                 #print('Prediction:',activations.shape)
                                 
                                 #print(target_word)
                                 #print('Target word:',target_word.shape)
                                 #print(activations)
                                 #print('Predicted word:',activations.shape)
-                        
                         
                                 #calculate the loss
                                 sample_loss += criterion(activations, target_word)
@@ -210,7 +289,11 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
 
                         
                         #check when to make the gradient to zero
-                        if(batch_counter == 5):
+                        if(batch_counter == 1):
+                        
+                                #change the rate every time a batch is passing through
+                                teacher_forcing_ratio = scheduled_sampling(100,index)
+                                #print(teacher_forcing_ratio)
                                 
                                 #print('\n')
                                 #print('Backpropagation')
@@ -239,20 +322,23 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
                         #print('\n')
                         print('--------------- epoch:',epoch+1,'out of:',epochs,'samples:',index+1,'out of:',len(samples),'---------------',end='\r')
                         sys.stdout.flush()
+                        #print('\n')
                         #print('loss:',sample_loss.item())
                         #print('\n')
                         
 
-                print(overall_loss)
-                print(len(overall_loss))
+                #print(overall_loss)
+                #print(len(overall_loss))
                 print('\n')
-                print('epoch:',epoch,'loss:',sum(overall_loss)/len(overall_loss))
+                print('epoch:',epoch+1,'loss:',sum(overall_loss)/len(overall_loss))
                 print('\n')
                 #break
         
         
         return recommender_encoder, recommender_decoder
-
+        
+        
+        
         
 '''
 
@@ -282,24 +368,65 @@ def make_prediction(path, recommender_encoder, recommender_decoder, samples, out
                 target = [targets[index]]
                 #print(sample)
                 #print(target)
+                
+                
+                #erase all the words that are not in the pretrained model, which provide us with the embeddings
+                target = word2vec.clean_text_review(target, tokenizer)
         
                 user_training_samples,user_testing_samples,product_training_samples,product_testing_samples,neighbourhood_training_samples,neighbourhood_testing_samples,training_ground_truth,testing_ground_truth,empty_flag = preprocessing.make_training_testing(path, sample, target, empty_text_reviews, normalize_user_reviews, normalize_product_reviews, normalize_neighbourhood_reviews, output_vocabulary_size, one_hot, empty_flag)
                 
-
-                #in case that I have a training sample, otherwise we feed our model
-                if (user_testing_samples.size == 0):
                 
-                        #skip this iteration
-                        continue
-
-
-
-
-                #convert them to torch tensor and put the on GPU, use permute to change the axes of the tensor
-                user_inputs = torch.tensor(user_testing_samples, dtype=torch.float32, device=device).permute(1,0,2)
-                product_inputs = torch.tensor(product_testing_samples, dtype=torch.torch.float32, device=device).permute(1,0,2)
-                neighbourhood_inputs = torch.tensor(neighbourhood_testing_samples, dtype=torch.torch.float32, device=device).permute(1,0,2)
-
+                if (role=='Training'):
+                
+                
+                        #in case that I have a training sample, otherwise we feed our model
+                        if (user_training_samples.size == 0):
+                        
+                                #skip this iteration
+                                continue
+                
+                        #removing the SOS symbol from the ground truth
+                        ground_truth = np.delete(training_ground_truth[0], 0)
+                        
+                        
+                        #reshape the resulting array to keep the format
+                        ground_truth = np.reshape(ground_truth, (1, ground_truth.shape[0]))
+                        
+                        
+                        #convert them to torch tensor and put the on GPU, use permute to change the axes of the tensor
+                        user_inputs = torch.tensor(user_training_samples, dtype=torch.float32, device=device).permute(1,0,2)
+                        product_inputs = torch.tensor(product_training_samples, dtype=torch.torch.float32, device=device).permute(1,0,2)
+                        neighbourhood_inputs = torch.tensor(neighbourhood_training_samples, dtype=torch.torch.float32, device=device).permute(1,0,2)
+                        
+                        
+                        
+                
+                elif(role=='Testing'):
+                
+                        #in case that I have a training sample, otherwise we feed our model
+                        if (user_testing_samples.size == 0):
+                        
+                                #skip this iteration
+                                continue
+                
+                
+                        print(testing_ground_truth)
+                        
+                        #removing the SOS symbol from the ground truth
+                        ground_truth = np.delete(testing_ground_truth[0], 0)
+                        
+                        #reshape the resulting array to keep the format
+                        ground_truth = np.reshape(ground_truth, (1, ground_truth.shape[0]))
+                        
+                        
+                        #convert them to torch tensor and put the on GPU, use permute to change the axes of the tensor
+                        user_inputs = torch.tensor(user_testing_samples, dtype=torch.float32, device=device).permute(1,0,2)
+                        product_inputs = torch.tensor(product_testing_samples, dtype=torch.torch.float32, device=device).permute(1,0,2)
+                        neighbourhood_inputs = torch.tensor(neighbourhood_testing_samples, dtype=torch.torch.float32, device=device).permute(1,0,2)
+                        
+                        
+                        
+                        
 
                 #feed the model
                 user_lstm_output, user_h, neighbourhood_lstm_output, neighbourhood_h, product_lstm_output, product_h = recommender_encoder(user_inputs, product_inputs, neighbourhood_inputs)
@@ -314,7 +441,7 @@ def make_prediction(path, recommender_encoder, recommender_decoder, samples, out
                 
                 #print(testing_ground_truth)
                 
-                for target_word in testing_ground_truth[0]:
+                for target_word in ground_truth[0]:
                 
                         
                 
@@ -342,13 +469,13 @@ def make_prediction(path, recommender_encoder, recommender_decoder, samples, out
                         predict_sentence.append(index)
                      
                     
-                        
+                #make the appropriate formats
                 prediction = predict_sentence
-                ground_truth = testing_ground_truth[0]
-                print(len(predict_sentence))
-                print(len(testing_ground_truth[0]))
+                ground_truth = ground_truth[0]
                 
+                #keep a record
                 count_predictions = index
+
                                 
                 
                 evaluation.make_sentence_one_by_one(prediction, ground_truth, target_reviews_length, tokenizer, role, count_predictions)
@@ -356,5 +483,28 @@ def make_prediction(path, recommender_encoder, recommender_decoder, samples, out
                         
                         
                 #print('END OF SENTENCE')
-
-
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
