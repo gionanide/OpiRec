@@ -56,8 +56,10 @@ if __name__ == '__main__':
         
         epochs = 100
         
+        teacher_forcing = True
         
-        encoder, decoder = pytorch_model_training.training(path, samples, output_vocabulary_size, targets, empty_text_reviews, normalize_reviews, one_hot, padding, hidden_units, epochs, tokenizer)
+        
+        encoder, decoder = pytorch_model_training.training(path, samples, output_vocabulary_size, targets, empty_text_reviews, normalize_reviews, one_hot, padding, hidden_units, epochs, tokenizer, teacher_forcing)
         
         
         #save the model
