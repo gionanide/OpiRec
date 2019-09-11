@@ -1,5 +1,5 @@
 #decode the predictions using beam search
-def make_prediction_beam_search(path, recommender_encoder, recommender_decoder, samples, output_vocabulary_size, targets, empty_text_reviews, normalize_user_reviews, normalize_product_reviews, normalize_neighbourhood_reviews, one_hot, padding, tokenizer, target_reviews_length, role, teacher_forcing, max_id_to_keep, beam_deapth):
+def make_prediction_beam_search(path, recommender_encoder, recommender_decoder, samples, output_vocabulary_size, targets, empty_text_reviews, normalize_user_reviews, normalize_product_reviews, normalize_neighbourhood_reviews, one_hot, padding, tokenizer, target_reviews_length, role, teacher_forcing, max_id_to_keep, beam_depth):
           
           
           
@@ -12,13 +12,13 @@ def make_prediction_beam_search(path, recommender_encoder, recommender_decoder, 
         empty_flag = False
         
         #initialize a queue for every new sample
-        global_priority_queue = queue.PriorityQueue(beam_deapth)
+        global_priority_queue = queue.PriorityQueue(beam_depth)
 
         #iterate all the samples, one by one
         for index, sample in enumerate(samples):
         
                 #keep record of the predictions
-                predict_sentences = [ [] for lists in range(beam_deapth)]
+                predict_sentences = [ [] for lists in range(beam_depth)]
         
                 #for maching the format, here if we want we can define a batch size
                 sample = [sample]
@@ -118,7 +118,7 @@ def make_prediction_beam_search(path, recommender_encoder, recommender_decoder, 
                 
                 
                         #make a temporary word every time we are iterating a word to keep only the best paths and then add them in the global queue
-                        temp_queue = queue.PriorityQueue(beam_deapth)
+                        temp_queue = queue.PriorityQueue(beam_depth)
                         
                         #print(temp_queue.empty())
                 
@@ -149,10 +149,10 @@ def make_prediction_beam_search(path, recommender_encoder, recommender_decoder, 
                                 #print('Predicted word:',activations.shape)
                                 
                                 #find the position of the max element, which represents the word ID, returns (1, 1, 3)
-                                values, indices = torch.topk(activations, k = beam_deapth, dim=1)
+                                values, indices = torch.topk(activations, k = beam_depth, dim=1)
 
                                 #give all the first k indices with their values
-                                decoder_inputs, priority_queue, temp_queue = Beam_Search.beam_search(global_priority_queue, values, indices, user_lstm_output, user_h, neighbourhood_lstm_output, neighbourhood_h, product_lstm_output, product_h, decoder_hidden, recommender_decoder, tokenizer, target_word, beam_deapth, device, temp_queue, decoder_count)
+                                decoder_inputs, priority_queue, temp_queue = Beam_Search.beam_search(global_priority_queue, values, indices, user_lstm_output, user_h, neighbourhood_lstm_output, neighbourhood_h, product_lstm_output, product_h, decoder_hidden, recommender_decoder, tokenizer, target_word, beam_depth, device, temp_queue, decoder_count)
                                 
                                 
                                 #predict_sentence.append(indices[0].item())
