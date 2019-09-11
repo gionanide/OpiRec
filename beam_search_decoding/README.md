@@ -22,7 +22,7 @@ Implementation procedure:
                                     
 #### Procedure insights
 
-         We are using priority queues to implement the aforementioned procedure.
+         We are using Priority Queues (PQ) to implement the aforementioned procedure.
          
          We can analyze this is three stages.
          
