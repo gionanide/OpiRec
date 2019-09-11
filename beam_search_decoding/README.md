@@ -2,7 +2,7 @@
 
 ```javascript
 
- Markup : * Decoder is running word by word
+          * Decoder is running word by word
           * Beam search 
           
           ``
