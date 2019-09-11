@@ -39,7 +39,8 @@ Implementation procedure:
          - Then we feed the Decoder with the first word of the k predictions that we kept. And we make 
          - another  Priority Queue, a temporary one, to keep the k words with the highest probability 
          - which generated when  we fed the model with the first of the k words that we initialy kept. 
-         - We are keeping paths and joint probabilities because each word is stem from a previous word,
+         - We are keeping paths and joint probabilities because each word is stem from a previous word
+         - so we are having a sequence of words.
          
 ###### Stage 3
 
