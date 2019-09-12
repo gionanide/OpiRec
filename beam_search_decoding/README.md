@@ -39,7 +39,15 @@ Implementation procedure:
 
 input: tuple ( user_inputs(user_reviews,300), product_inputs(product_reviews,300), neighbourhood_inputs(neighbourhood_reviews,300) )
 
-[ [], [] ]
+output: tensor(1, vocabulary_size), we choose the k words with the highest probability
+
+- assume k = 3
+
+[probability], [word_id]
+  
+[ [0.15], [6]
+  [0.48], [3]
+  [0.18], [8] ]
 
 
 ```
