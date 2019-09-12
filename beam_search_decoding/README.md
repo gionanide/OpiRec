@@ -61,6 +61,22 @@ output: tensor(1, vocabulary_size), we choose the k words with the highest proba
          - We are keeping paths and joint probabilities because each word is stem from a previous word
          - so we are having a sequence of words.
          
+         
+```python
+
+input to the decoder, the first of the k words.
+input: [word_id] = [6]
+
+output: tensor(1, vocabulary_size), we choose the k words with the highest probability
+
+PQ:  [ [0.089], [6, 80]
+       [0.022], [6, 3]                  
+       [0.018], [6, 230] ]                  
+
+
+```
+
+         
 ###### Stage 3
 
          - As a last step we are iterating all the first k words and we feed the Decoder for each 
