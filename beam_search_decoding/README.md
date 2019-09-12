@@ -35,14 +35,14 @@ Implementation procedure:
          - with higher probability (key).
          
          
-         ```python
-         
-         input: tuple ( user_inputs(user_reviews,300), product_inputs(product_reviews,300), neighbourhood_inputs(neighbourhood_reviews,300) )
-         
-         [ [], [] ]
-         
-         
-         ```
+```python
+
+input: tuple ( user_inputs(user_reviews,300), product_inputs(product_reviews,300), neighbourhood_inputs(neighbourhood_reviews,300) )
+
+[ [], [] ]
+
+
+```
          
          
 ###### Stage 2
