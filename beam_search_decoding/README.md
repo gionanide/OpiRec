@@ -45,9 +45,9 @@ output: tensor(1, vocabulary_size) #we choose the k words with the highest proba
 
 [probability], [word_id]
   
-[ [0.15], [6]           ************* PQ:  [ [0.15], [6]
-  [0.48], [3]                                [0.18], [8]
-  [0.18], [8] ]                              [0.48], [3] ]
+[ [0.15], [6]           ************* global PQ:  [ [0.15], [6]
+  [0.48], [3]                                       [0.18], [8]
+  [0.18], [8] ]                                     [0.48], [3] ]
 
 
 ```
@@ -69,9 +69,9 @@ input: [word_id] = [6]
 
 output: tensor(1, vocabulary_size) #we choose the k words with the highest probability
 
-PQ:  [ [0.089], [6, 80]
-       [0.022], [6, 3]                  
-       [0.018], [6, 230] ]                  
+temporary PQ:  [ [0.089], [6, 80]
+                 [0.022], [6, 3]                  
+                 [0.018], [6, 230] ]                  
 
 
 ```
@@ -85,6 +85,32 @@ PQ:  [ [0.089], [6, 80]
          - generated we check if its probability is higher than the minimum probability of the PQ. 
          - If it is, we erase the element with the minimum probability and we insert the other. 
          - We do this iteratively until we iterate all the first k generated words.
+         
+         
+```python
+
+#I iterate only the first word of the first k words so I have to iterate k-1 more.
+
+input to the decoder, the second of the k words.
+input: [word_id] = [3]
+
+temporary PQ:  [ [0.015], [6, 230]            predictions:  [ [0.090], [3, 3]
+                 [0.022], [6, 3]                              [0.002], [3, 780] 
+                 [0.089], [6, 80] ]                           [0.008], [6, 90] ] 
+                 
+                 
+#check if an element from the prediction has higher probability from the lowest probability of the temporary queue, if this is True insert it in the Queue.
+
+temporary PQ after update:  [ [0.022], [6, 3]         
+                              [0.089], [6, 80]                              
+                              [0.090], [3, 3] ] 
+                              
+                              
+#we repeat this precedure until we iterate all the elements from the global queue and when we finish we assign the temporary queue to the global one
+
+
+```
+
           
 ###### Final stage
 
@@ -93,3 +119,15 @@ PQ:  [ [0.089], [6, 80]
          - Stage 1,2,3 is only for the prediction of one word given k words. So before we go again in the 
          - Stage 1 to predict the next k words for every word in k words we have to replace the global 
          - PQ with the temporary one.
+         
+         
+```python
+
+new global PQ = [ [0.022], [6, 3]         
+                  [0.089], [6, 80]                              
+                  [0.090], [3, 3] ] 
+                  
+#start again the whole procedure using this as a global queue.
+
+
+```
