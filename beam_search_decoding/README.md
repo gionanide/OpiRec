@@ -34,6 +34,17 @@ Implementation procedure:
          - element with the lowest probability, so the element which is going out first if we insert another 
          - with higher probability (key).
          
+         
+         ```python
+         
+         input: tuple ( user_inputs(user_reviews,300), product_inputs(product_reviews,300), neighbourhood_inputs(neighbourhood_reviews,300) )
+         
+         [ [], [] ]
+         
+         
+         ```
+         
+         
 ###### Stage 2
          
          - Then we feed the Decoder with the first word of the k predictions that we kept. And we make 
