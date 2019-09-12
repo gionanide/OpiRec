@@ -36,10 +36,7 @@ Implementation procedure:
          
          
 ```python
-
-input: tuple ( user_inputs(user_reviews,300), product_inputs(product_reviews,300), neighbourhood_inputs(neighbourhood_reviews,300) )
-
-output: tensor(1, vocabulary_size) #we choose the k words with the highest probability
+input: tensor(1, vocabulary_size) #we choose the k words with the highest probability
 
 - assume k = 3
 
