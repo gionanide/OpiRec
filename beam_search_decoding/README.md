@@ -39,7 +39,7 @@ Implementation procedure:
 
 input: tuple ( user_inputs(user_reviews,300), product_inputs(product_reviews,300), neighbourhood_inputs(neighbourhood_reviews,300) )
 
-output: tensor(1, vocabulary_size), we choose the k words with the highest probability
+output: tensor(1, vocabulary_size) #we choose the k words with the highest probability
 
 - assume k = 3
 
@@ -67,7 +67,7 @@ output: tensor(1, vocabulary_size), we choose the k words with the highest proba
 input to the decoder, the first of the k words.
 input: [word_id] = [6]
 
-output: tensor(1, vocabulary_size), we choose the k words with the highest probability
+output: tensor(1, vocabulary_size) #we choose the k words with the highest probability
 
 PQ:  [ [0.089], [6, 80]
        [0.022], [6, 3]                  
