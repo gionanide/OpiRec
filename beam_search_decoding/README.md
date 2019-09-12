@@ -123,7 +123,7 @@ temporary PQ after update:  [ [0.022], [6, 3]
          
 ```python
 
-new global PQ = [ [0.022], [6, 3]         
+new global PQ = [ [0.051], [8, 160]         
                   [0.089], [6, 80]                              
                   [0.090], [3, 3] ] 
                   
