@@ -45,9 +45,9 @@ output: tensor(1, vocabulary_size), we choose the k words with the highest proba
 
 [probability], [word_id]
   
-[ [0.15], [6]
-  [0.48], [3]
-  [0.18], [8] ]
+[ [0.15], [6]           ------------> PQ:  [ [0.15], [6]
+  [0.48], [3]                                [0.18], [8]
+  [0.18], [8] ]                              [0.48], [3] ]
 
 
 ```
