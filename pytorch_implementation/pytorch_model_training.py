@@ -336,6 +336,112 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
         
         
         return recommender_encoder, recommender_decoder
+
+
+
+
+#iterate the test samples every time an epoch is ended
+def epoch_validation(test_samples, test_samples_ground_truth, recommender_encoder, recommender_decoder, device, teacher_forcing, tokenizer, criterion):
+                
+                #keep a list with the oveall lost
+                overall_loss = []
+
+
+                for sample_index, sample in enumerate(test_samples):
+                
+                
+                        #initialize the loss
+                        loss = 0
+                
+                
+                
+                        #split the input
+                        user_inputs = sample[0]
+                        product_inputs = sample[1]
+                        neighbourhood_inputs = sample[2]
+                        
+                        #convert them to torch tensor and put the on GPU, use permute to change the axes of the tensor
+                        user_inputs = torch.tensor(user_inputs, dtype=torch.float32, device=device).permute(1,0,2)
+                        product_inputs = torch.tensor(product_inputs, dtype=torch.torch.float32, device=device).permute(1,0,2)
+                        neighbourhood_inputs = torch.tensor(neighbourhood_inputs, dtype=torch.torch.float32, device=device).permute(1,0,2)
+        
+        
+        
+                        #feed the model
+                        user_lstm_output, user_h, neighbourhood_lstm_output, neighbourhood_h, product_lstm_output, product_h = recommender_encoder(user_inputs, product_inputs, neighbourhood_inputs)
+                        
+                        
+                        #assign the first hidden state of the decoder
+                        decoder_hidden = product_h
+                        
+                        
+                        if (teacher_forcing):
+                                
+                                        #make the appropriate format in order to feed the previous word to the decoder -- the first word to feed decoder is SOS
+                                        decoder_inputs = torch.FloatTensor(torch.Size((1, 1, 300)))
+                                        #but their word embeddings can be arbitrary, small random numbers will do fine, because this vector would be equally far from all "normal" vectors.
+                                        torch.randn(torch.Size((1, 1, 300)), out=decoder_inputs)
+                                        decoder_inputs = decoder_inputs.to(device)
+                                        #print('Decoder initialization with SOS token',decoder_inputs)
+                                        #print('Decoder initialization with SOS token shape',decoder_inputs.shape)  
+                                                       
+                        
+                        #print('\n\n ---------- End of Encoder ---------- \n\n')
+                        
+                        
+                        #print(testing_ground_truth)
+                        
+                        for target_word in test_samples_ground_truth[sample_index][0]:
+                        
+                                
+                        
+                                #print('Generating a word \n')
+                                #print(target_word)
+                        
+                                activations, decoder_hidden = recommender_decoder(user_lstm_output, user_h, neighbourhood_lstm_output, neighbourhood_h, product_lstm_output, product_h, decoder_hidden, decoder_inputs)
+                                
+
+                                #iterating the ground thruth
+                                target_word = torch.tensor(target_word, dtype=torch.long, device=device).unsqueeze(0)
+                                #print('Target:',target_word.shape)
+                                        
+                                activations = activations.squeeze(0)
+                                #print('Prediction:',activations.shape)
+                                
+                                #print('Target word:',target_word.shape)
+                                #print(activations)
+                                #print('Predicted word:',activations.shape)
+                                
+                                #find the position of the max element, which represents the word ID
+                                predicted_index = torch.argmax(activations).item() + 1
+                                
+                                
+                                if (teacher_forcing):
+                                
+                                        #print(index)
+                                        #make the appropriate format in order to feed the previous word to the decoder
+                                        decoder_inputs = preprocessing.index_to_word_mapping(predicted_index, tokenizer)
+                                        #print(decoder_inputs)
+                                        decoder_inputs = word2vec.word2vec(decoder_inputs)
+                                        decoder_inputs = torch.tensor(decoder_inputs, dtype=torch.torch.float32, device=device).unsqueeze(0).unsqueeze(0)       
+                                
+                                #calculate the loss
+                                loss += criterion(activations, target_word)
+                                
+                                
+                        loss_current = loss.item()/len(test_samples_ground_truth[sample_index][0])
+                
+                
+                        #print('loss',loss_current)
+                        overall_loss.append(loss_current)
+                        
+                        
+                loss_return = sum(overall_loss)/len(overall_loss)
+                        
+                        
+                return loss_return
+
+
         
         
         
