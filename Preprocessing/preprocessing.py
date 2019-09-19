@@ -134,6 +134,10 @@ def clean_review(text_review, re_print, table):
         
         #remove tokens with numbers
         text_review = [word for word in text_review if word.isalpha()]
+        
+        #here we erese all the words that are not in our vocabulary to avoid predictions out of the vocabulary
+        text_review = w2v.clean_text_review_natural_text(text_review)
+        #print(text_review)
 
 
         #add the begin and stop symbols in the begging and in the end of each sentence
@@ -150,7 +154,163 @@ def clean_review(text_review, re_print, table):
         return text_review, length
         
                         
+     
+
+
+'''
+
+delete all the words that their count is lower that a threshold
+
+'''
+def erase_rare_words(tokenizer, count_thres):
+
+        low_count_words = []
+
+        #find all the low count words
+        for word, count in tokenizer.word_counts.items():
+        
+                #find all these words
+                if (count < count_thres):
+                
+                        #and gather them in a list
+                        low_count_words.append(word)
+                        #print(word) 
+        
+        
+        for w in low_count_words:
+        
+                #print(w)
+                #erase all these words from the tokenizer
+                del tokenizer.word_index[w]
+                del tokenizer.word_docs[w]
+                del tokenizer.word_counts[w]
+                
+                
+        print('Erased -bad- words:',len(low_count_words),'keep only:',len(tokenizer.word_index),'words \n')
+               
+                
+        return tokenizer
+        
+        
+        
+        
+'''
+
+use this function in order to erase every word that still appears and it is not in the Tokenizer because of the previous procedure that we use to erase some 'bad' words
+
+'''
+def overall_cleaning(cleaned_sentences, tokenizer):
+
+
+        cleaned_sentences_new = []
+
+        
+        #iterate every sentence in the archive
+        for sentence in cleaned_sentences:
+        
+                sentence = sentence.split(' ')
+                
+                #make a copy of the list to keep all the words
+                temp_tentence = sentence.copy()
+                
+                #iterate all the words of the sentences
+                for word in temp_tentence:
+                
+                        #check if the word is in the tokenizer
+                        if ( (not(word in tokenizer.word_index)) and ( (not(word=='SOS')) and (not(word=='EOS')) ) ):
                         
+                        
+                                #we want to erase all the appearences of this word in the list
+                                while (word in sentence):
+                                
+                                        #print(word)
+                                
+                                        #remove the word if it is not belong to the model. Exception if the word does not belong to the model but it is EOS/SOS keep
+                                        sentence.remove(word)
+                                        
+                                        
+                #append the new sentence
+                cleaned_sentences_new.append(sentence)
+                
+                
+                
+        return cleaned_sentences_new
+                
+        
+        
+        
+        
+        
+        
+'''
+
+delete all the words that their count is higher that a threshold
+
+'''
+def erase_most_frequent_words(tokenizer, max_id_to_keep):
+
+        high_count_words = []
+        
+        
+        if (max_id_to_keep >= len(tokenizer.word_index)):
+        
+                print('You choice is: ',max_id_to_keep,'and the length of the tokenizer is: ',len(tokenizer.word_index))
+                max_id_to_keep = int(input('please adjust your choice: '))
+        
+
+        for word_id in range(1,max_id_to_keep+1):
+        
+                word_found = index_to_word_mapping(word_id, tokenizer)
+                
+                if ( word_found=='eos' or word_found=='sos'):
+                
+                        continue
+                        
+                #print(word_found)
+                high_count_words.append(word_found)
+                
+        for index, word_found in enumerate(high_count_words):
+        
+                #erase all these words from the tokenizer
+                del tokenizer.word_index[word_found]
+                del tokenizer.word_docs[word_found]
+                del tokenizer.word_counts[word_found]
+                
+                #print(word_found)
+                #print(tokenizer.word_index[word_found])
+                
+                
+        print('Erased -very good- words:',max_id_to_keep)
+                
+                
+        return tokenizer
+        
+        
+'''
+
+Update tokenizer with the new vocabulary
+
+'''
+def update_tokenizer(tokenizer, cleaned_sentences):
+
+
+        #clean the sentences based on the new tokenizer
+        cleaned_sentences = overall_cleaning(cleaned_sentences, tokenizer)
+
+
+        #initalize an instance of the Tokenizer class
+        tokenizer_new = tf.keras.preprocessing.text.Tokenizer()
+                
+                
+                
+        #fit tokenizer again because not we erase some words
+        tokenizer_new.fit_on_texts(cleaned_sentences)
+        
+        
+        
+        return tokenizer_new, cleaned_sentences
+
+
                         
                         
                         
@@ -276,8 +436,11 @@ def format_target(path,samples):
         #an id of a word
         sequences = tokenizer.texts_to_sequences(cleaned_sentences)
         
-        #now we have to apply padding to our sequences, to reach the max review
-        sequences = tf.keras.preprocessing.sequence.pad_sequences(sequences, maxlen=max_review_length, padding='post')
+        if(padding):
+        
+                #now we have to apply padding to our sequences, to reach the max review
+                sequences = tf.keras.preprocessing.sequence.pad_sequences(sequences, maxlen=max_review_length, padding='post')
+                
         
         eos = tokenizer.word_index['eos']
         sos = tokenizer.word_index['sos']
@@ -378,7 +541,36 @@ def make_training_testing(path, samples, target_reviews, empty_text_reviews, nor
                         
                 except NameError:
                 
-                        print('Nan value')
+                        #print('\n Nan value \n')
+                        
+                        empty_flag = True
+                        
+                        #do not update anything and just continue
+                        continue
+                        
+                except SyntaxError:
+                
+                        #print('\n unexpected EOF while parsing \n')
+                        
+                        empty_flag = True
+                        
+                        #do not update anything and just continue
+                        continue
+                        
+                #if the index is in the list with the reviews that do not contain a test review, skip it
+                if (index in empty_text_reviews):
+                
+                        #print('\n Empty review \n')
+                        
+                        empty_flag = True
+
+                        #do not update anything and just continue
+                        continue
+                        
+                else:
+                
+                        #else if the sample is ok update propersly
+                        review_index+=1
                         
                 
                 '''                
@@ -409,15 +601,26 @@ def make_training_testing(path, samples, target_reviews, empty_text_reviews, nor
 
                 
                 
-                #-------------------------------------------------------------------------------> initialize the corresponding matrices, review embedding is being represented with a 300 vector                
-                user_model_array = make_reviews_array(user_model, normalize_reviews)
+                #-------------------------------------------------------------------------------> initialize the corresponding matrices, review embedding is being represented with a 300 vector  
                 
-                product_model_array = make_reviews_array(product_model, normalize_reviews)
+                #if we gave as a normalization term None value it means that we are taking all the users and product reviews
+                if (normalize_user_reviews==None):
+                        
+                        normalize_user_reviews = len(user_model)
+                              
+                user_model_array = make_reviews_array(user_model, normalize_user_reviews)
+                
+                
+                if (normalize_product_reviews==None):
+                        
+                        normalize_product_reviews = len(product_model)
+                
+                product_model_array = make_reviews_array(product_model, normalize_product_reviews)
                 
                 #first I have to flatten the list of lists of lists to list of lists
                 neighbourhood_model = list(flatten(neighbourhood_model))
               
-                neighbourhood_model_array = make_reviews_array(neighbourhood_model, normalize_reviews)
+                neighbourhood_model_array = make_reviews_array(neighbourhood_model, normalize_neighbourhood_reviews)
                 
                 
                 
@@ -441,7 +644,7 @@ def make_training_testing(path, samples, target_reviews, empty_text_reviews, nor
                 #split testing samples for every submodel -------------------------------------------------------> Testing
                 review = np.array(target_reviews[review_index])
                 
-                #review = np.reshape(review, (review.shape[0], 1))            
+                #review = np.reshape(review, (review.shape[0], 1))             
                 
                 
                 
@@ -513,11 +716,20 @@ def make_training_testing(path, samples, target_reviews, empty_text_reviews, nor
         
         testing_ground_truth = np.array(testing_ground_truth)
         
+        if(one_hot):
+        
+                training_ground_truth = keras.utils.to_categorical(training_ground_truth, num_classes=output_vocabulary_size)
+                
+                #print(training_ground_truth.shape)
+        
+                testing_ground_truth = keras.utils.to_categorical(testing_ground_truth, num_classes=output_vocabulary_size) 
+                
+                #print(testing_ground_truth.shape)
+        
         print('\n\n\n')
 
     
-        return user_training_samples,user_testing_samples,product_training_samples,product_testing_samples,neighbourhood_training_samples,neighbourhood_testing_samples,training_ground_truth,testing_ground_truth
-        
+        return user_training_samples,user_testing_samples,product_training_samples,product_testing_samples,neighbourhood_training_samples,neighbourhood_testing_samples,training_ground_truth,testing_ground_truth, empty_flag        
         
         
         
