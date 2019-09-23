@@ -101,7 +101,14 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
                 #iterate all the samples, one by one
                 for index, sample in enumerate(samples):
                 
-                        #print(index)
+                        '''
+                        #use this if you want to test just for a small set
+                        if (index==30):
+                                
+                                break
+                                #print(index)
+                        '''
+                        
                 
                         #keep track of sample loss
                         sample_loss = 0
