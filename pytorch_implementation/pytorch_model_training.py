@@ -200,6 +200,9 @@ def training(path, samples, output_vocabulary_size, targets, empty_text_reviews,
                         #print(user_inputs)
                         #print(product_inputs)
                         #print(neighbourhood_inputs)
+                        
+                        #initialize the coverage vector, every time we meet a new sample this vector is zero
+                        coverage_vector = torch.zeros([1, 1, product_inputs.shape[0]], dtype=torch.float).to(device1)
 
 
                         #feed the model
