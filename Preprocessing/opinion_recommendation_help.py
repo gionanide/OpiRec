@@ -31,6 +31,71 @@ def readReviewFile(path):
 
 '''
 
+We use this function to make a txt file which contains all the ratings for every business
+
+'''
+def make_business_rating_dict():
+
+        path = '/media/data/gionanide/OpinionRecommendation/Proceedings/all_reviews.txt'
+        
+        #read the file as a dataframe
+        data = readReviewFile(path)    
+        
+        #initialize the dictionary
+        dict_business_ratings = {}
+       
+        
+        #iterate all dataset
+        for review in range(len(data)):
+
+                #assign the fields
+                userId = data.iloc[review]['user_id'].strip()
+                businessId = data.iloc[review]['business_id'].strip()
+                rating = data.iloc[review]['user_star']     
+                                          
+                
+                #because some reviews do not exist, we are taking a 'Nan' value, so we use try-except to handle it
+                try:
+                        text_review = data.iloc[review]['review_text'].strip()
+                #handle nan value
+                except AttributeError:
+                        print('Nan value, no text review')
+                        continue
+                        
+                #same procedure for businessId
+                if(businessId in dict_business_ratings):
+                        #if a business already in the dictionary just append the rating to its list of ratings
+                        dict_business_ratings[businessId].append(rating)
+                        
+                else:
+                        #if a business is not in the dictionary just initialize it
+                        dict_business_ratings[businessId] = [rating]
+               
+        print(len(dict_business_ratings))
+        
+        just_for_iteration= dict_business_ratings.copy()
+               
+        #delete the bad business with very few ratings
+        for business_id in just_for_iteration:
+                
+                #if it has ratings bel;ow 50 erase it from the dictionary
+                if ( len(dict_business_ratings[business_id]) < 50 ):
+                
+                        del dict_business_ratings[business_id]
+               
+               
+        print(len(dict_business_ratings))
+               
+        outputfile =  open('businesses_ratings.txt','w+')        
+                
+
+        #write it to a file using json
+        outputfile.write(json.dumps(dict_business_ratings))
+
+
+
+'''
+
 This function is implements the following procedures
 
 -- takes all the reviews and split the into two dictionaries as denoted below, dict_users, dict_businesses.
