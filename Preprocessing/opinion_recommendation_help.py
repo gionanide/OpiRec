@@ -28,6 +28,24 @@ def readReviewFile(path):
 	#return an array (dtaframe) with number_of_reviews rows and our columns(names)
 	return data
 
+'''
+
+We use this function to insert a txt file of the form x,y and conclude in a dictionary of the form dict[x]=y
+
+'''
+def read_txt_file_as_dict(path):
+
+        #------------------------------------------------------> read the mappings as dictionaries
+        with open(path, mode='r') as infile:
+        
+                reader = csv.reader(infile, delimiter=',')
+                
+                #dictionary with the following format
+                #{businessId(key): column_number(value)}, example {naqJ8iKmZ1m9YWOyvgODZQ: 0}
+                new_dict = {rows[0]:rows[1] for rows in reader}
+                
+        return new_dict
+
 
 '''
 
@@ -35,6 +53,12 @@ We use this function to make a txt file which contains all the ratings for every
 
 '''
 def make_business_rating_dict():
+	
+	#read the dictionary which contains every business Id and it's ratings
+        mapping_users_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/mapping_user.txt')
+        users_reviews_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/counter_users_review.txt')
+        mapping_business_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/mapping_business.txt')
+        business_reviews_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/counter_business_review.txt')
 
         path = '/media/data/gionanide/OpinionRecommendation/Proceedings/all_reviews.txt'
         
@@ -62,30 +86,20 @@ def make_business_rating_dict():
                         print('Nan value, no text review')
                         continue
                         
-                #same procedure for businessId
-                if(businessId in dict_business_ratings):
-                        #if a business already in the dictionary just append the rating to its list of ratings
-                        dict_business_ratings[businessId].append(rating)
+                #before we append a rating we have to check if the user is valid(which means is has reviews higher than a threshold we predefined)
+                if ( (int(users_reviews_dict[mapping_users_dict[userId]]) >= 50) and (int(business_reviews_dict[mapping_business_dict[userId]]) >= 50) ):
+                
+                        if(businessId in dict_business_ratings):
                         
-                else:
-                        #if a business is not in the dictionary just initialize it
-                        dict_business_ratings[businessId] = [rating]
+                                #if a business already in the dictionary just append the rating to its list of ratings
+                                dict_business_ratings[businessId].append(rating)
+                                
+                        else:
+                        
+                                #if a business is not in the dictionary just initialize it
+                                dict_business_ratings[businessId] = [rating]
                
-        print(len(dict_business_ratings))
-        
-        just_for_iteration= dict_business_ratings.copy()
-               
-        #delete the bad business with very few ratings
-        for business_id in just_for_iteration:
-                
-                #if it has ratings bel;ow 50 erase it from the dictionary
-                if ( len(dict_business_ratings[business_id]) < 50 ):
-                
-                        del dict_business_ratings[business_id]
-               
-               
-        print(len(dict_business_ratings))
-               
+	
         outputfile =  open('businesses_ratings.txt','w+')        
                 
 
