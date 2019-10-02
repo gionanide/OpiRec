@@ -33,18 +33,24 @@ def readReviewFile(path):
 We use this function to insert a txt file of the form x,y and conclude in a dictionary of the form dict[x]=y
 
 '''
-def read_txt_file_as_dict(path):
+def read_txt_file_as_dict(path, reverse):
 
         #------------------------------------------------------> read the mappings as dictionaries
         with open(path, mode='r') as infile:
         
-                reader = csv.reader(infile, delimiter=',')
+                readervxvdfvfd = csv.reader(infile, delimiter=',')
                 
-                #dictionary with the following format
-                #{businessId(key): column_number(value)}, example {naqJ8iKmZ1m9YWOyvgODZQ: 0}
-                new_dict = {rows[0]:rows[1] for rows in reader}
                 
-        return new_dict
+		#dictionary with the following format
+		#{businessId(key): column_number(value)}, example {naqJ8iKmZ1m9YWOyvgODZQ: 0}
+		new_dict = {rows[0]:rows[1] for rows in reader}
+			
+                if (reverse):
+                
+                        #the inverse mapping, example {0: YWBuX2RBbwhYK1jGdZttJA}
+                        new_dict = dict(map(reversed, new_dict.items()))
+			
+		return new_dict
 
 
 '''
@@ -55,11 +61,11 @@ We use this function to make a txt file which contains all the ratings for every
 def make_business_rating_dict():
 	
 	#read the dictionary which contains every business Id and it's ratings
-        mapping_users_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/mapping_user.txt')
-        users_reviews_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/counter_users_review.txt')
-        mapping_business_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/mapping_business.txt')
-        business_reviews_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/counter_business_review.txt')
+        mapping_business_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/mapping_business.txt',reverse=False)
+        business_reviews_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/counter_business_review.txt',reverse=False)
+                
 
+        #iterate all the reviews
         path = '/media/data/gionanide/OpinionRecommendation/Proceedings/all_reviews.txt'
         
         #read the file as a dataframe
@@ -80,44 +86,30 @@ def make_business_rating_dict():
                 
                 #because some reviews do not exist, we are taking a 'Nan' value, so we use try-except to handle it
                 try:
+                
                         text_review = data.iloc[review]['review_text'].strip()
+                        
                 #handle nan value
                 except AttributeError:
                         print('Nan value, no text review')
                         continue
                         
-                #before we append a rating we have to check if the user is valid(which means is has reviews higher than a threshold we predefined)
-                if ( (int(users_reviews_dict[mapping_users_dict[userId]]) >= 50) and (int(business_reviews_dict[mapping_business_dict[businessId]]) >= 50) ):
                 
+                #before we append a rating we have to check if the user is valid(which means is has reviews higher than a threshold we predefined)
+                if ( (int(business_reviews_dict[mapping_business_dict[businessId]]) >= 50) ):
+                
+                        #and then check if the specific business is already in the dictionary or I have to initialize it
                         if(businessId in dict_business_ratings):
                         
                                 #if a business already in the dictionary just append the rating to its list of ratings
-                                dict_business_ratings[businessId].append(rating)
+                                dict_business_ratings[businessId].append((userId,rating))
                                 
                         else:
                         
                                 #if a business is not in the dictionary just initialize it
-                                dict_business_ratings[businessId] = [rating]
-               
-	
-	#MAKE AN ADDITIONAL CHECK BECAUSE WE CAN NOT COUNT ONLY ON THE PREVIOUS METRICS
-        print(len(dict_business_ratings))
+                                dict_business_ratings[businessId] = [(userId,rating)]
         
-        just_for_iteration = dict_business_ratings.copy()
                
-        #delete the bad business with very few ratings
-        for business_id in just_for_iteration:
-                
-                #if it has number of ratings below 50 erase it from the dictionary
-                if ( len(dict_business_ratings[business_id]) < 50 ):
-                
-                        del dict_business_ratings[business_id]
-               
-               
-        print(len(dict_business_ratings))
-	
-	
-	
         outputfile =  open('businesses_ratings.txt','w+')        
                 
 
