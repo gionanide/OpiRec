@@ -100,6 +100,24 @@ def make_business_rating_dict():
                                 dict_business_ratings[businessId] = [rating]
                
 	
+	#MAKE AN ADDITIONAL CHECK BECAUSE WE CAN NOT COUNT ONLY ON THE PREVIOUS METRICS
+        print(len(dict_business_ratings))
+        
+        just_for_iteration = dict_business_ratings.copy()
+               
+        #delete the bad business with very few ratings
+        for business_id in just_for_iteration:
+                
+                #if it has number of ratings below 50 erase it from the dictionary
+                if ( len(dict_business_ratings[business_id]) < 50 ):
+                
+                        del dict_business_ratings[business_id]
+               
+               
+        print(len(dict_business_ratings))
+	
+	
+	
         outputfile =  open('businesses_ratings.txt','w+')        
                 
 
