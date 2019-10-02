@@ -496,6 +496,8 @@ def make_training_testing(path, samples, target_reviews, empty_text_reviews, nor
         #initialize training and testing lists
         product_training_samples = []
         product_testing_samples = []
+        product_training_samples_rating = []
+        product_testing_samples_rating = []
         
         #initialize training and testing lists
         neighbourhood_training_samples = []
@@ -504,6 +506,9 @@ def make_training_testing(path, samples, target_reviews, empty_text_reviews, nor
         #initialize the ground truths
         training_ground_truth = []
         testing_ground_truth = []
+        
+        #initialize the ratings for this product
+        product_ratings = []
 
         count=0
         
@@ -614,6 +619,27 @@ def make_training_testing(path, samples, target_reviews, empty_text_reviews, nor
                 if (normalize_product_reviews==None):
                         
                         normalize_product_reviews = len(product_model)
+                        
+                #iterate all the reviews for this specific business
+                for rating_review in business_rating_dict[sample_file_dictionary['businessId']]:
+                        
+                        #assign the fields
+                        userId = rating_review[0]
+                        rating = rating_review[1]
+                        
+                        #if the current review is the review I want to predict just continue the loop skpping this one
+                        if (userId == sample_file_dictionary['userId']):
+                        
+                                #this is the rating we want to predict
+                                continue
+                
+                        else:
+                        
+                                #else append the rating
+                                product_ratings.append(rating)
+                
+                #take all the ratings from this business, keeping only in the range of normalize_product_reviews
+                product_ratings = product_ratings[:normalize_product_reviews]
                 
                 product_model_array = make_reviews_array(product_model, normalize_product_reviews)
                 
