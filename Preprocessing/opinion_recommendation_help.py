@@ -87,7 +87,7 @@ def make_business_rating_dict():
                         continue
                         
                 #before we append a rating we have to check if the user is valid(which means is has reviews higher than a threshold we predefined)
-                if ( (int(users_reviews_dict[mapping_users_dict[userId]]) >= 50) and (int(business_reviews_dict[mapping_business_dict[userId]]) >= 50) ):
+                if ( (int(users_reviews_dict[mapping_users_dict[userId]]) >= 50) and (int(business_reviews_dict[mapping_business_dict[businessId]]) >= 50) ):
                 
                         if(businessId in dict_business_ratings):
                         
