@@ -15,4 +15,4 @@
 
 ## Recommender v_4
 
-![alt text](https://github.com/gionanide/Opinion_Recommendation/blob/master/keras_implementation/recommenders/recommender_v4.png)
+![alt text](https://github.com/gionanide/Opinion_Recommendation/blob/master/Worksheet/keras_implementation/recommenders/recommender_v4.png)
