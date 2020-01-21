@@ -10,7 +10,7 @@
 
 ## Recommender v_3
 
-![alt text](https://github.com/gionanide/Opinion_Recommendation/blob/master/keras_implementation/recommenders/recommender_v3.png)
+![alt text](https://github.com/gionanide/Opinion_Recommendation/blob/master/Worksheet/keras_implementation/recommenders/recommender_v3.png)
 
 
 ## Recommender v_4
