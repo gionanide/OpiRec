@@ -1,6 +1,6 @@
 ## Recommender v_1
 
-![alt text](https://github.com/gionanide/Opinion_Recommendation/Worksheet/keras_implementation/recommenders/recommender_v1.png)
+![alt text](https://github.com/gionanide/Opinion_Recommendation/blob/master/Worksheet/keras_implementation/recommenders/recommender_v1.png)
 
 
 ## Recommender v_2
