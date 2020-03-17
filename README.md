@@ -2,4 +2,47 @@
 
 #### Abstract
 
-###### Opinion recommendation is a task, recently introduced, for consistently generating a text review and a rating score that a certain user would give to a certain product which has never seen before. Input information driving opinion recommendation is all available reviews, text and rating for a product contributed by other users, and user’s text reviews submitted by the user under consideration to other products. Τhe aforementioned task is related to Natural Language Processing. Thus, facing the same problems in text generation using neural networks such as repetition, specificity. In this paper, it is demonstrated experimentally that deploying a repetition loss during training, repetition is reduced without adding extra parameters. Furthermore, the amount of repetition in the generated text review was defined as a measure of the captured information. Such measure is used to calibrate rating score prediction accordingly during testing, and significantly improved it.
+###### 
+  Recommendation aims at providing a service or a product to a consumer based
+on consumer’s special interests. By doing so, a personalized recommendation is
+provided, which is a feature of utmost importance for a recommendation system.
+
+  Here, we are interesting in the opinion recommendation task. That is, to con-
+sistently generate a text review and a rating score that a certain user would give
+to a certain product, which has never seen before. The mathematical modeling
+of natural language, as well as the recent progress in the specific field, suggests
+that deep learning methods are justified.
+
+  As a consequence, deep neural networks will be employed for modeling the text
+reviews with the objective of capturing user and product profiles.
+
+  As a first step, a vector representation of the text is derived using the Skip-
+Gram model. Such a representation, depicts the semantic of the words. Pro-
+viding the property that two words with similar meaning have small distance
+between their vector representations the semantics is illustrated. Besides the
+aforementioned, Skip-Gram model provides a dense vector representation of a
+word, which enforces generalization power.
+
+  Taking into account the extracted text representation, Long Short-Term Me-
+mory networks (LSTMs) are used to model user and product profile. The recur-
+rent nature of the foresaid networks can model sequential data, as the existing
+ixreviews are. An attention mechanism is used to extract the most informative re-
+views yielding to a better vector representation of the user under consideration.
+
+  Higher level of abstraction and latent interactions between user and product
+will be obtained using the Dynamic Memory Network (DMN). The core of
+the previously mentioned network consists of a recurrent attention mechanism.
+This property (i.e., recurrent attention) provides relevant features using a query
+among product reviews, where the query consists of the derived user vector repre-
+sentation. A reasoning about retrieved facts, that is text reviews, is considered,
+modeling the interaction between the user and the product.
+
+  Having all the information captured in a vector representation, the decoding
+procedure consists of a standard LSTM to generate the text review in natural
+language. The rating score prediction is an average between the weighted sum
+of all the previous ratings for the specific product and model prediction.
+
+  At a application level, a model for generating customized text review and rating
+score in Python has been developed. Publicly available sources containing users
+text reviews will be used, such as Yelp academic data set. Comparisons will be
+made against state-of-the-art models tested on the same task.
