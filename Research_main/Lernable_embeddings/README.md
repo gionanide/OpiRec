@@ -3,8 +3,8 @@ upcoming link for downloading train, dev, test data (every file .pkl contains an
 
 #### --------------- Train ---------------
 python training.py 
---epochs integer (epochs to train)
---batch_size integer (samples per batch)
+--epochs integer (epochs to train)  
+--batch_size integer (samples per batch
 --hidden_units integer
 --shuffle boolean True/False (shuffle data at each epoch)
 --pretrained boolean True/False (continue training by loading a pretrained model)
