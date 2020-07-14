@@ -22,6 +22,6 @@ python training.py
     
 #### --------------- Test ---------------
 python inference.py  
---epoch 245 (load a model from a specific epoch)  
---batch_size 32 (samples per batch)  
---mode test (test/dev validate on test or development set)  
+--epoch integer (load a model from a specific epoch)  
+--batch_size integer (samples per batch)  
+--mode string (test/dev validate on test or development set)  
