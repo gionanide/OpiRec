@@ -52,4 +52,4 @@ made against state-of-the-art models tested on the same task.
 folder contains the source code of opinion recommendation task.
 
 #### ---- Worksheet
-folder contains previous approaches and variations of the main procedure (development samples).
+folder contains previous approaches and variations of the main procedure (deprecated).
