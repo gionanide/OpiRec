@@ -4,7 +4,7 @@ upcoming link for downloading train, dev, test data (every file .pkl contains an
 #### --------------- Train ---------------
 python training.py 
 --epochs integer (epochs to train)  
---batch_size integer (samples per batch  
+--batch_size integer (samples per batch)  
 --hidden_units integer  
 --shuffle boolean True/False (shuffle data at each epoch)  
 --pretrained boolean True/False (continue training by loading a pretrained model)  
@@ -17,3 +17,11 @@ python training.py
 --number_of_layers_decoder integer (number of layers of LSTM decoder)  
 --parallel True/False (if training will by parallel and distributed)  
 
+
+
+    
+#### --------------- Test ---------------
+python inference.py  
+--epoch 245 (load a model from a specific epoch)  
+--batch_size 32 (samples per batch)  
+--mode test (test/dev validate on test or development set)  
