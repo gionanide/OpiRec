@@ -32,11 +32,11 @@ https://github.com/mmihaltz/word2vec-GoogleNews-vectors
 ##### Input:
 REAL_Dataset
 ##### Outputs
-1. preprocessing.make_sorted_dataset() --> tensors representing the reviews, ready to fed the model.
-The ouput in an object (saved .pkl format) having the following fields (for every sample):
-----> user_reviews
-----> business_reviews
-----> neighbourhood_reviews
-----> product_ratings
-----> text_review_target
-----> rating_score_target
+1. preprocessing.make_sorted_dataset() --> tensors (take from the pretained model) representing the reviews, ready to fed the model.  
+The ouput in an object (saved .pkl format) having the following fields (for every sample):  
+----> user_reviews  
+----> business_reviews  
+----> neighbourhood_reviews    
+----> product_ratings  
+----> text_review_target  
+----> rating_score_target  
