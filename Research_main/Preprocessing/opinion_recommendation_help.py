@@ -206,7 +206,7 @@ def cosine_dist(matrix1, neigbours, adjust):
         '''
         #----------------------------------------------->  
 	#Memory problems using this approach
-        distance_matrix = np.genfromtxt('/media/data/gionanide/OpinionRecommendation/Training-Testing_sets/distance_matrix_90-10.txt', delimiter=',')
+        distance_matrix = np.genfromtxt('./distance_matrix_90-10.txt', delimiter=',')
         for row in range(len(distance_matrix)):
                 min_positions.append(np.argsort(distance_matrix[row,:], kind='quicksort')[:neigbours])
         '''
@@ -215,9 +215,9 @@ def cosine_dist(matrix1, neigbours, adjust):
         #----------------------------------------------->  
 	#With this method we read every time a line from the array        
         #because of memory problems we do not read all the matrix, instead we read row by row
-        distance_matrix = open('/media/data/gionanide/OpinionRecommendation/Training-Testing_sets/distance_matrix_80-20.txt','r')
+        distance_matrix = open('./distance_matrix_80-20.txt','r')
         #open the file to write
-        min_positions_file = open('/media/data/gionanide/OpinionRecommendation/user_neigbours_80-20.txt','w+')
+        min_positions_file = open('./user_neigbours_80-20.txt','w+')
         #initialize the list to save the neigbours of the current user
         min_positions = []
         #iterate every line of the file
@@ -389,7 +389,6 @@ def subtrackSparing_iid(R, threshold):
 Build another function which is reading all the dataset and it is assign to every ID, business or user all its/his reviews. Because we want to save computational cost.
 '''
 def makeBusinessUserRecords():
-        #path = '/media/data/gionanide/OpinionRecommendation/Proceedings/part_of_the_reviews.txt'
         path = './all_reviews.txt'
         start_time = pc()
         #read the file as a dataframe
@@ -438,7 +437,6 @@ we make this function in order to make the format to feed our NN model, the form
 {role} -------------------------> we define the sample's role, training/testing in matrix factorization procedure, because we want to use the same sets in Neural procedure:
 '''
 def makeNNfeedFormat():
-        #path = '/media/data/gionanide/OpinionRecommendation/Proceedings/part_of_the_reviews.txt'
         path = './all_reviews.txt'
         start_time = pc()
         #read the file as a dataframe
