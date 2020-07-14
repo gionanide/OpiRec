@@ -1,3 +1,4 @@
+userID ----- businessID
 -Dof9NwAoQwRM-GVPZk5zw ----- cBpJIOrVXotDI0XAZH_k0g
 1g8Crb6WGQUsA2l2X3yVGA ----- uKSX1n1RoAzGq4bV8GPHVg
 67QGJdqABqaSEsQR4esrsA ----- Zx8_4zKdDBSO3qGrkukBIA
