@@ -43,10 +43,10 @@ We use this function to make a txt file which contains all the ratings for every
 '''
 def make_business_rating_dict():
         #read the dictionary which contains every business Id and it's ratings
-        mapping_business_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/mapping_business.txt',reverse=False)
-        business_reviews_dict = read_txt_file_as_dict('/media/data/gionanide/OpinionRecommendation/Proceedings/counter_business_review.txt',reverse=False)
+        mapping_business_dict = read_txt_file_as_dict('./mapping_business.txt',reverse=False)
+        business_reviews_dict = read_txt_file_as_dict('./counter_business_review.txt',reverse=False)
         #iterate all the reviews
-        path = '/media/data/gionanide/OpinionRecommendation/Proceedings/all_reviews.txt'
+        path = './all_reviews.txt'
         #read the file as a dataframe
         data = readReviewFile(path)    
         #initialize the dictionary
@@ -73,7 +73,7 @@ def make_business_rating_dict():
                         else:
                                 #if a business is not in the dictionary just initialize it
                                 dict_business_ratings[businessId] = [(userId,rating)]       
-        outputfile =  open('businesses_ratings.txt','w+')        
+        outputfile =  open('./businesses_ratings.txt','w+')        
         #write it to a file using json
         outputfile.write(json.dumps(dict_business_ratings))
 
@@ -246,7 +246,7 @@ def cosine_dist(matrix1, neigbours, adjust):
 '''
 def UsersRatingCounts(R):
         #open the dataframe witch contains all the reviews that have been made
-        file_counts = open('/media/data/gionanide/OpinionRecommendation/Proceedings/users_review_counter.txt','w+')
+        file_counts = open('./users_review_counter.txt','w+')
         #for every unique user count his reviews
         counts = R['userId'].value_counts()
         print('counts = ',counts)
@@ -261,7 +261,7 @@ def UsersRatingCounts(R):
 '''
 def BusinessRatingCounts(R):
         #open the dataframe witch contains all the reviews that have been made
-        file_counts = open('/media/data/gionanide/OpinionRecommendation/Proceedings/business_review_counter.txt','w+')
+        file_counts = open('./business_review_counter.txt','w+')
         #for every unique user count his reviews
         counts = R['businessId'].value_counts()
         print('counts = ',counts)
@@ -291,7 +291,7 @@ def makeUserMapping():
 #---------------------------> make a file with the mapping LargeBusinessId - smallBusinessId (index)
 '''    
 def makeBusinessMapping():
-	f_businesses = open("mapping_business.txt","w+")
+	f_businesses = open("./mapping_business.txt","w+")
 	#------------------------------------------> Businesses mapping
         for business in dict_businesses:
                 print('business: ',str(business))
@@ -390,7 +390,7 @@ Build another function which is reading all the dataset and it is assign to ever
 '''
 def makeBusinessUserRecords():
         #path = '/media/data/gionanide/OpinionRecommendation/Proceedings/part_of_the_reviews.txt'
-        path = '/media/data/gionanide/OpinionRecommendation/Proceedings/all_reviews.txt'
+        path = './all_reviews.txt'
         start_time = pc()
         #read the file as a dataframe
         data = readReviewFile(path)
@@ -439,7 +439,7 @@ we make this function in order to make the format to feed our NN model, the form
 '''
 def makeNNfeedFormat():
         #path = '/media/data/gionanide/OpinionRecommendation/Proceedings/part_of_the_reviews.txt'
-        path = '/media/data/gionanide/OpinionRecommendation/Proceedings/all_reviews.txt'
+        path = './all_reviews.txt'
         start_time = pc()
         #read the file as a dataframe
         data = readReviewFile(path)
@@ -447,7 +447,7 @@ def makeNNfeedFormat():
         overall_time = end_time - start_time
         print('Time reading the file: ',overall_time)
         #------------------------------------------------------> read the mappings as dictionaries
-        with open('/media/data/gionanide/OpinionRecommendation/Proceedings/mapping_business.txt', mode='r') as infile:
+        with open('./mapping_business.txt', mode='r') as infile:
                 reader = csv.reader(infile, delimiter=',')
                 #dictionary with the following format
                 #{businessId(key): column_number(value)}, example {naqJ8iKmZ1m9YWOyvgODZQ: 0}
@@ -455,7 +455,7 @@ def makeNNfeedFormat():
                 #inverse mapping, example {0: naqJ8iKmZ1m9YWOyvgODZQ}
                 dict_columnNumber_to_business = dict(map(reversed, dict_business_to_columnNumber.items()))
                 print('dict_columnNumber_to_business',len(dict_columnNumber_to_business))        
-        with open('/media/data/gionanide/OpinionRecommendation/Proceedings/mapping_user.txt', mode='r') as infile:
+        with open('./mapping_user.txt', mode='r') as infile:
                 reader = csv.reader(infile, delimiter=',')
                 #dictionary with the following format
                 #{userId(key): row_number(value)}, example {YWBuX2RBbwhYK1jGdZttJA: 0}
@@ -463,7 +463,7 @@ def makeNNfeedFormat():
                 #the inverse mapping, example {0: YWBuX2RBbwhYK1jGdZttJA}
                 dict_rowNumber_to_user = dict(map(reversed, dict_user_to_rowNumber.items()))
                 print('dict_rowNumber_to_user',len(dict_rowNumber_to_user))
-        with open('/media/data/gionanide/OpinionRecommendation/Training-Testing_sets/user_neigbours_90-10.txt',mode='r') as infile:
+        with open('./user_neigbours_90-10.txt',mode='r') as infile:
                 #because the row_index represent the row_number with is the userId after mapping it with the largeId, 
 		#(dict_user dictionary is keeping this mapping)
                 row_index = 0
@@ -476,14 +476,14 @@ def makeNNfeedFormat():
                         dict_user_neighbourhood[dict_rowNumber_to_user[str(row_index)]] = line[:-2].replace(" ", "").split(',') #last two characters '\n'
                         #go to the next user
                         row_index+=1
-        with open('/media/data/gionanide/OpinionRecommendation/Training-Testing_sets/TRAINING_uid-iid-rgt_90-10.txt',mode='r') as infile:
+        with open('./TRAINING_uid-iid-rgt_90-10.txt',mode='r') as infile:
                 reader = csv.reader(infile, delimiter=',')
                 #the file is containing: userId,businessId,rating_groundTruth
                 #our dictionary (userId, businessId(keys): rating_groundTruth(value))
                 #example ( (0,0): 5.0 )
                 dict_user_training = {(rows[0],rows[1]): rows[2] for rows in reader}              
                 print('dict_user_training',len(dict_user_training))        
-        with open('/media/data/gionanide/OpinionRecommendation/Training-Testing_sets/TESTING_uid-iid-rgt-rest_90-10.txt',mode='r') as infile:
+        with open('./TESTING_uid-iid-rgt-rest_90-10.txt',mode='r') as infile:
                 reader = csv.reader(infile, delimiter=',')
                 #the file in containing: userId,businessId,rating_goundTruth,rating_estimation
                 #our dictionary (userId, businessId(keys): (rating_goundTruth,rating_estimation(value) )
@@ -492,7 +492,7 @@ def makeNNfeedFormat():
                 print('dict_user_testing',len(dict_user_testing))      
         print('Reading dictionaries \n')
         #read the file as dictionary, userId which contains all the reviews that this user made
-        users_business_reviews = open('/media/data/gionanide/OpinionRecommendation/Training-Testing_sets/all_businesses_users_reviews.txt','r').read()        
+        users_business_reviews = open('./all_businesses_users_reviews.txt','r').read()        
         dict_users_business_reviews = eval(users_business_reviews)        
         through_out=0
         not_in_neig=0
