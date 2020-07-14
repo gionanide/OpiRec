@@ -1,0 +1,3 @@
+-------------------- libraries installed using -- lukepfister -- --------------------
+scikits.cuda==0.5.2
+pytools==2018.4
