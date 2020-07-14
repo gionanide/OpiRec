@@ -27,7 +27,8 @@ python inference.py
 --mode string (test/dev validate on test or development set)  
 
 #### --------------- Preprocessing ---------------
-##### Input: REAL_Dataset:  
+##### Input:
+REAL_Dataset
 ##### Outputs:
 1. preprocessing.make_vocabularies() --> generate vocabularies
 2. preprocessing.encode_sequences() --> generate all the reviews as sequences of indices, ready to fed the model
