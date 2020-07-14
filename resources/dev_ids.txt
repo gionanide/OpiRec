@@ -1,3 +1,4 @@
+userID ----- businessID
 Pv7DGHzZ-uqIUdOsqPpsVg ----- sbsFamEj5wDxNAjUKrMcSw
 Bmzq_nkjYqp8aWn12RJdhA ----- Zx8_4zKdDBSO3qGrkukBIA
 LHQ2fuC2RDS-Md_dN2O1IQ ----- rDvz5jX65gpfONFu7er9Tw
