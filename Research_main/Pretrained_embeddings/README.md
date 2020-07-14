@@ -1,1 +1,1 @@
-###### *upcoming to link for downloading tain, dev, test data (every file .pkl contains an object which has the following fields: user_reviews, product_reviews, neighbourhood_reviews, product_ratings, text_review_target, rating_score_target)*
+###### *upcoming link for downloading tain, dev, test data (every file .pkl contains an object which has the following fields: user_reviews, product_reviews, neighbourhood_reviews, product_ratings, text_review_target, rating_score_target)*
