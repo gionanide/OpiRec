@@ -1,4 +1,3 @@
--------------------- libraries installed using -- pypi -- --------------------
 mako==1.0.4
 gensim==3.8.1
 pycuda==2017.1
