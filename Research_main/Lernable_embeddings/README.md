@@ -2,7 +2,7 @@
 upcoming link for downloading train, dev, test data (every file .pkl contains an object which has the following fields: user_reviews, product_reviews, neighbourhood_reviews, product_ratings, text_review_target, rating_score_target)
 
 #### --------------- Train ---------------
-python training.py 
+python training.py   
 --epochs integer (epochs to train)  
 --batch_size integer (samples per batch)  
 --hidden_units integer  
