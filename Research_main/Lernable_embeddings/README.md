@@ -32,3 +32,10 @@ REAL_Dataset
 ##### Outputs:
 1. preprocessing.make_vocabularies() --> generate vocabularies
 2. preprocessing.encode_sequences() --> generate all the reviews as sequences of indices, ready to fed the model
+The ouput in an object (saved .pkl format) having the following fields (for every sample):
+----> user_reviews
+----> business_reviews
+----> neighbourhood_reviews
+----> product_ratings
+----> text_review_target
+----> rating_score_target
