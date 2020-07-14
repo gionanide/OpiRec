@@ -18,9 +18,12 @@ python training.py
 
 
 
-    
 #### --------------- Test ---------------
 python inference.py  
 --epoch integer (load a model from a specific epoch)  
 --batch_size integer (samples per batch)  
---mode string (test/dev validate on test or development set)  
+--mode string (test/dev validate on test or development set)
+
+
+#### --------------- Download pretrained embeddings ---------------
+https://github.com/mmihaltz/word2vec-GoogleNews-vectors
