@@ -31,7 +31,7 @@ def make_order(input_list):
 def make_sorted_dataset():
        
         #file to read the sampes
-        path = '/media/data/gionanide/OpinionRecommendation/Preprocessing/REAL_dataset' # 47036 samples
+        path = './REAL_dataset' # 47036 samples
         #path = '/media/data/gionanide/OpinionRecommendation/Preprocessing/Feeding_samples_90-10/' # -----------------> 53565 samples
         #path = '/media/data/gionanide/OpinionRecommendation/data/Feeding_samples_90-10_medium/' # -------------> 2089 samples
         #path = '/media/data/gionanide/OpinionRecommendation/data/Feeding_smaples_90-10_small/' # ---------------> 512 samples
@@ -136,7 +136,7 @@ def make_sorted_dataset():
         try:
                 
                 #read the dictionary which contains every business Id and it's ratings
-                business_rating_file = open('/media/data/gionanide/OpinionRecommendation/Proceedings/businesses_ratings.txt','r').read()
+                business_rating_file = open('./data/businesses_ratings.txt','r').read()
                 business_rating_dict = eval(business_rating_file)
                         
         except:
