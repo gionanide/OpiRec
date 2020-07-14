@@ -97,7 +97,7 @@ def clean_dataset():
     path = "./REAL_dataset/"
     input_files = os.listdir(path) # read all the files from this directoyry
     #load training and testing ids
-    train_dict = open_ids(open("./data//train_ids.txt","r"))
+    train_dict = open_ids(open("./data/train_ids.txt","r"))
     test_dict = open_ids(open("./data/test_ids.txt","r")) 
     for index, input_file in enumerate(input_files):
         input_ids = (input_file.split("--------")[0],input_file.split("--------")[1][:-4])#split the file's name
