@@ -12,7 +12,7 @@ among product reviews, where the query consists of the derived user vector repre
 folder contains the source code of opinion recommendation task.
 
 #### ---- Worksheet -----
-folder contains previous approaches and variations of the main procedure (deprecated).
+folder contains previous approaches (deprecated).
 
 #### ---- resources -----
 folder contains train, development, test sets.
