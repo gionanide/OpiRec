@@ -27,3 +27,9 @@ python inference.py
 
 #### --------------- Download pretrained embeddings ---------------
 https://github.com/mmihaltz/word2vec-GoogleNews-vectors
+
+#### --------------- Preprocessing ---------------
+##### Input:
+REAL_Dataset
+##### Outputs
+1. preprocessing.make_sorted_dataset() --> tensors representing the reviews, ready to fed the model.
