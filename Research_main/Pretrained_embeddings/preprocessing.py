@@ -32,10 +32,6 @@ def make_sorted_dataset():
        
         #file to read the sampes
         path = './REAL_dataset' # 47036 samples
-        #path = '/media/data/gionanide/OpinionRecommendation/Preprocessing/Feeding_samples_90-10/' # -----------------> 53565 samples
-        #path = '/media/data/gionanide/OpinionRecommendation/data/Feeding_samples_90-10_medium/' # -------------> 2089 samples
-        #path = '/media/data/gionanide/OpinionRecommendation/data/Feeding_smaples_90-10_small/' # ---------------> 512 samples
-        #path = '/media/data/gionanide/OpinionRecommendation/data/Feeding_smaples_90-10_oneshot/' # ------------> 1 sample
         
         train_file = open("./train_ids.txt","r")
         test_file = open("./test_ids.txt","r")
