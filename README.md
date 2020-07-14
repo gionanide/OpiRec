@@ -7,7 +7,7 @@ Recommendation aims at providing a service or a product to a consumer based on c
 among product reviews, where the query consists of the derived user vector representation. A reasoning about retrieved facts, that is text reviews, is considered, modeling the interaction between the user and the product. Having all the information captured in a vector representation, the decoding procedure consists of a standard LSTM to generate the text review in natural language. The rating score prediction is an average between the weighted sum of all the previous ratings for the specific product and model prediction.
 
 
-File structure:
+###### File structure:
 #### ----- Research_main -----
 folder contains the source code of opinion recommendation task.
 
