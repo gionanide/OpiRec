@@ -9,4 +9,4 @@ pip install -r requirements_pypi.txt
 ###### --------------------------------------------------
 
 
-*note that some requirements depends on the approach (lernable/ pretrained embeddings) and you do not have to install them all.
+*note that some requirements depends on the approach (lernable/ pretrained embeddings) and you do not have to install them all.*
