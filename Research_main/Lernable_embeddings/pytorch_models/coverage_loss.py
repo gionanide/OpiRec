@@ -38,9 +38,7 @@ def coverage_loss(mask,activations_mask,device,beam_decode): #loss is bounded be
                                 break
                      
                         loss = torch.sum(torch.min(overall_weights,timestep)) #find the min element of the current dimensions, compare elementwise
-                        overall_weights = ((torch.sum(activation[:time+1,:],dim=0))/activation.shape[0]).to(device) #after timestep = 0 || now we are taking the (unormalized)sum of the previous activations
-                        #overall_weights = ((torch.sum(activation[:time+1,:],dim=0))).to(device) #after timestep = 0 || now we are taking the (unormalized)sum of the previous activations
-                        
+                        overall_weights = ((torch.sum(activation[:time+1,:],dim=0))/activation.shape[0]).to(device) #after timestep = 0 || now we are taking the (unormalized)sum of the previous activations                        
                 overall_coverage = overall_coverage + loss # keep track of the general conerage loss of the batch
                 
         cov_loss = overall_coverage/activations_distribution.shape[0] #divide by the batch size
