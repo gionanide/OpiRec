@@ -48,8 +48,9 @@ text reviews will be used, such as Yelp academic data set. Comparisons will be
 made against state-of-the-art models tested on the same task.
 
 
-#### ---- Research_main
+File structure:
+#### ----- Research_main -----
 folder contains the source code of opinion recommendation task.
 
-#### ---- Worksheet
+#### ---- Worksheet -----
 folder contains previous approaches and variations of the main procedure (deprecated).
