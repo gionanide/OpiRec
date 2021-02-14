@@ -13,7 +13,7 @@ certifi==2019.9.11
 cffi==1.12.3   
 chardet==3.0.4    
 colorama==0.4.1    
-cryptography==2.7      
+cryptography>=3.2     
 cycler==0.10.0   
 decorator==4.4.0    
 docutils==0.14     
