@@ -32,7 +32,7 @@ harfbuzz==1.8.8
 hdf5==1.10.4
 idna==2.8
 intel-openmp==2019.4
-jinja2==2.10.1
+jinja2>=2.11.3
 keras-applications==1.0.8
 keras-base==2.2.4
 keras-preprocessing==1.1.0
