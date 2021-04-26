@@ -63,7 +63,7 @@ pcre==8.43
 pillow>=6.2.2
 pixman==0.38.0
 protobuf==3.8.0
-py==1.8.0
+py>=1.10.0
 pycparser==2.19
 pydot==1.4.1
 python==3.6.8
