@@ -20,7 +20,7 @@ libxcb==1.13
 libxml2==2.9.9
 matplotlib==3.1.0
 mock==3.0.5
-pip==19.2.1
+pip>=19.2
 pluggy==0.12.0
 pyopenssl==19.0.0
 pyparsing==2.4.0
