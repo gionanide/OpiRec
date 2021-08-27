@@ -30,7 +30,14 @@ Example:
 python inference.py  
 --epoch **integer** (load a model from a specific epoch)  
 --batch_size **integer** (samples per batch)  
---mode **string** (test/dev validate on test or development set)  
+--mode **string** (test/dev validate on test or development set)
+
+Example:
+---
+```console
+(conda_env) ~$ python inference.py --epochs 100 --batch_size 32 --mode test
+```
+---
 
 #### --------------- Preprocessing ---------------
 ##### Input:
