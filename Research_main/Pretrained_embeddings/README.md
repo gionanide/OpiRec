@@ -16,6 +16,13 @@ python training.py
 --number_of_layers_decoder **integer** (number of layers of LSTM decoder)  
 --parallel **boolean** True/False (if training will by parallel and distributed)  
 
+Example:
+---
+```console
+(conda_env) ~$ python training.py --epochs 100 --batch_size 32 --hidden_units 300 shuffle True --pretrained False --mode no_path --encoder_input_dropout 0.2 --dropout_lstm_output 0.2 --dropout_after_linear 0.4 --episodes 3 --number_of_layers_encoder 2 --number_of_layers_decoder 2 --parallel True
+```
+---
+
 
 
 #### --------------- Test ---------------
