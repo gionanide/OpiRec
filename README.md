@@ -13,3 +13,15 @@ folder contains previous approaches (deprecated).
 
 #### ---- resources -----
 folder contains train, development, test sets.
+
+
+
+If you find this code useful in your research, please consider citing:
+
+@inproceedings{gionanidisOpiRec2021,
+  title={Opinion Recommendation Using Coverage for Adaptive Prediction},
+  author={Gionanidis E., Kotropoulos C., Ntemi M.},
+  booktitle={IEEE 31st International Workshop on Machine Learning for Signal Processing (MLSP)},
+  pages={1--6},
+  year={2021},
+}
