@@ -15,9 +15,12 @@ folder contains previous approaches (deprecated).
 folder contains train, development, test sets.
 
 
-
+  
+    
+      
+###### ---- cite -----      
 If you find this code useful in your research, please consider citing:
-
+```latex
 @inproceedings{gionanidisOpiRec2021,
   title={Opinion Recommendation Using Coverage for Adaptive Prediction},
   author={Gionanidis E., Kotropoulos C., Ntemi M.},
@@ -25,3 +28,4 @@ If you find this code useful in your research, please consider citing:
   pages={1--6},
   year={2021},
 }
+```
